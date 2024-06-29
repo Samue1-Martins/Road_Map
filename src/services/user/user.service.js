@@ -11,20 +11,26 @@ export class UserService {
                 }
             });
             
+            // if (userAlreadyExist) {
+            //     return `Usuario ${ERROR.ALREADY_EXIST}`
+            // }
+
             if (userAlreadyExist) {
-                return `Usuario ${ERRORS.ALREADY_EXIST}`
+                return res
+                .status(400)
+                .json({error: `${ERROR.ALREADY_EXIST}` }) 
             }
 
-            const newUser = await UserService.create({
+            const newUser = await User.create({
                 name, email, password
             });
-            return newUser;;
+            return newUser;
         } catch (error) {
             return error
         }
     }
     async getAllUserService() {
-        return await UserService.findAll();
+        return await User.findAll();
     }
 }
 
