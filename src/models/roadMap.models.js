@@ -1,23 +1,26 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../config/sequelize.js';
-import Sequelize from 'sequelize';
+import { DataTypes } from "sequelize";
+import sequelize from "../config/sequelize.js";
+import Sequelize from "sequelize";
 
-export const User = sequelize.define("tb_users", {
-    id: {
+export const RoadMap = sequelize.define("tb_road_map", {
+    id:{
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
     },
-    name: {
+    theme: {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    email: {
+    description: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+    },
+    local: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
     },
-    password: {
+    social_network: {
         type: DataTypes.STRING,
         allowNull: false,
     },
@@ -31,4 +34,4 @@ export const User = sequelize.define("tb_users", {
         allowNull: false,
         defaultValue: Sequelize.fn('NOW'),
     },
-});
+})

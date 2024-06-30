@@ -23,7 +23,9 @@ const createUser = async (req, res) => {
         res.status(201).json(newUser);
 
     } catch (error) {
-        return error
+        return res
+            .status(500)
+            .json({ message: 'Erro no servidor', error })
     }
 
 }
@@ -100,9 +102,7 @@ const deleteUser = async (req, res) => {
             id
         }
     })
-    return res.json({
-        message: `Usuário ${SUCCESS.DELETED}`
-    })
+    return res.json({ message: `Usuário ${SUCCESS.DELETED}` })
 }
 
 
