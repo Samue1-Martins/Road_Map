@@ -13,7 +13,7 @@ import{
 export const roadMapRoutes = Router();
 
 roadMapRoutes.post("/new-roadMap", createRoadMap)
-roadMapRoutes.get("/roadMaps", getAllRoadMaps)
+roadMapRoutes.get("/all-roadMaps", getAllRoadMaps)
 roadMapRoutes.get("/roadMap-find-theme", getRoadMapByTheme)
 roadMapRoutes.patch("/update-theme/:id", updateTheme)
 roadMapRoutes.patch("/update-description/:id", updateDescription )
