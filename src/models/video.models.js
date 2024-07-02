@@ -30,4 +30,4 @@ export const Video = sequelize.define("tb_video", {
         allowNull: false,
         defaultValue: Sequelize.fn('NOW'),
     },
-})
+});

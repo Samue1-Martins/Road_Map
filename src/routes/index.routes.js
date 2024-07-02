@@ -6,7 +6,7 @@ import { videoRoutes } from "./video.routes.js";
 const routes = Router();
 
 routes.use(userRoute);
-routes.use(roadMapRoutes)
-routes.use(videoRoutes)
+routes.use(roadMapRoutes);
+routes.use(videoRoutes);
 
 export { routes }

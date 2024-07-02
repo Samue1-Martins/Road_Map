@@ -3,13 +3,13 @@ import sequelize from "../config/sequelize.js";
 import Sequelize from "sequelize";
 
 export const RoadMap = sequelize.define("tb_road_map", {
-    id:{
+    id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
     },
     theme: {
-        type: DataTypes.STRING(50),
+        type: DataTypes.STRING,
         allowNull: false,
     },
     description: {
@@ -34,4 +34,4 @@ export const RoadMap = sequelize.define("tb_road_map", {
         allowNull: false,
         defaultValue: Sequelize.fn('NOW'),
     },
-})
+});

@@ -5,7 +5,7 @@ import {
     getUserByName,
     updatePassword,
     deleteUser
-} from "../controllers/user.controller.js"
+} from "../controllers/user.controller.js";
 
 export const userRoute = Router();
 
