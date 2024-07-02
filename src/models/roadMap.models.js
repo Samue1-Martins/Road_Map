@@ -9,7 +9,7 @@ export const RoadMap = sequelize.define("tb_road_map", {
         primaryKey: true,
     },
     theme: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(50),
         allowNull: false,
     },
     description: {

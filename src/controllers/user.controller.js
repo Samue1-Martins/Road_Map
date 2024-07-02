@@ -1,5 +1,7 @@
 import { User } from "../models/user.models.js"
 import { ERROR, SUCCESS } from "../shared/messages.js"
+import bcrypt from "bcrypt"
+
 
 const createUser = async (req, res) => {
 
@@ -66,7 +68,9 @@ const updatePassword = async (req, res) => {
                 .json({ message: `Usuario ${ERROR.NOT_FOUND}` })
         }
 
-        await User.update({ password: newPassword }, {
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        await User.update({ password: hashedPassword }, {
             where: {
                 id
             }
