@@ -6,12 +6,6 @@ Este projeto é uma API desenvolvida com Node.js, Express e Sequelize, destinada
 A API permite que os usuários se cadastrem, façam login e, uma vez autenticados, possam criar, visualizar, editar e excluir roteiros detalhados para seus vídeos. <br>
 Este sistema é ideal para criadores de conteúdo que desejam organizar suas ideias e estruturas de vídeo de maneira eficaz.
 
-Tecnologias Utilizadas
-
-
-
-
-  
 ## Tecnologias utilizadas
 
   - Node.js: Ambiente de execução JavaScript no lado do servidor. <br>
