@@ -1,138 +1,154 @@
 import { User } from "../models/user.models.js";
 import { ERROR, SUCCESS } from "../shared/messages.js";
-import bcrypt from "bcrypt";
-import jsonwebtoken from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
-
-const SALT_ROUNDS = 10
-
-const createUser = async (req, res) => {
-    const { name, email, password } = req.body;
+export const createUser = async (req, res) => {
     try {
+        const { name, email, password } = req.body;
+        const emailAlreadyExist = await User.findOne({ where: { email } });
 
-        const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS)
-        const userAlreadyExist = await User.findOne({
-            where: {
-                name,
-                email
-            }
-        });
-        if (userAlreadyExist) {
-            return res
-                .status(400)
-                .json({ error: `Usuário ${ERROR.ALREADY_EXIST}` });
+        if (emailAlreadyExist) {
+            return res.status(400).json({ error: `Email ${ERROR.ALREADY_EXIST}` });
         };
+
+        const SALT_ROUNDS = 10
+        const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS)
+
         const newUser = await User.create({
-            name, 
-            email,
+            ...req.body,
             password: hashedPassword
         });
 
-        res.status(201).json(newUser);
-    } catch (error) {
-        return res
-            .status(500)
-            .json({ message: 'Erro no servidor:', error });
-    };
-};
-
-const getAllUser = async (req, res) => {
-    const users = await User.findAll();
-    return res.json({ users });
-};
-
-const getUserByName = async (req, res) => {
-    const { name } = req.body;
-    const UserFindName = await User.findOne({
-        where: {
-            name
-        }
-    });
-    return res.json({ UserFindName });
-}
-
-const updatePassword = async (req, res) => {
-    const { id } = req.params;
-    const { password: newPassword } = req.body;
-    try {
-        const user = await User.findOne({
-            where: {
-                id
-            }
+        return res.status(201).json({
+            message: `Usuário ${SUCCESS.CREATED}`
         });
-        if (!user) {
-            return res
-                .status(404)
-                .json({ message: `Usuário ${ERROR.NOT_FOUND}` });
-        };
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-        await User.update({ password: hashedPassword }, {
-            where: {
-                id
-            }
-        });
-        const updatedUser = await User.findByPk(id);
-        return res.json({ message: `Senha atualizada com sucesso!`, user: updatedUser });
+
     } catch (error) {
-        return res
-            .status(500)
-            .json({ message: 'Erro no serivdor:', error });
+        console.error('[ERRO] createUser:', error)
+        return res.status(500).json({ message: 'Erro interno no servidor:', error });
     };
 };
 
-const deleteUser = async (req, res) => {
-    const { id } = req.params;
-    const user = await User.findOne({
-        where: {
-            id
-        }
-    });
-    if (!user) {
-        return res
-            .status(404)
-            .json({ message: `Usuário ${ERROR.NOT_FOUND}` })
-    };
-    await User.destroy({
-        where: {
-            id
-        }
-    });
-    return res.json({ message: `Usuário ${SUCCESS.DELETED}` });
-};
 
-const controlLoginUser = async (req, res) => {
-    const { email, password } = req.body
+export const controlLoginUser = async (req, res) => {
     try {
+        const { email, password } = req.body
         const user = await User.findOne({ where: { email } })
 
         if (!user) {
-            return res.status(404).json({ error: 'Usuário não encontrado' })
+            return res.status(401).json({ error: 'Email ou senha incorretas' })
         }
 
         const validPassword = await bcrypt.compare(password, user.password)
+
         if (!validPassword) {
-            return res.status(401).json({ error: 'Senha incorreta' })
+            return res.status(401).json({ error: 'Email ou senha incorreta' })
         }
 
-        const SECRET_KEY = 'Ej{F&(;59cDq=HeU@~z7#m'
-        const token = jsonwebtoken.sign({ id: user.id }, SECRET_KEY, { expiresIn: '1h' })
-        res.json({ token, user: { id: user.id, email: user.email, name: user.name } })
+        const SECRET_KEY = process.env.JWT_SECRET
 
-    // Encontra o usuário pelo email
+        const token = jwt.sign(
+            { id: user.id },
+            SECRET_KEY,
+            { expiresIn: '1h' })
 
-    // const user = await User.findOne({ where: { email, password } });
+        const userResponse = user.toJSON();
+        delete userResponse.password;
 
-    // if (!user) {
-    //     return res.status(404).json({ error: 'Usuário não encontrado ou senha incorreta!' });
-    // }
-
-    // res.json({ user: { id: user.id, email: user.email, name: user.name } });
+        return res.status(200).json(
+            {
+                token,
+                user: userResponse
+            });
 
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Erro ao fazer login' });
+        console.error('[ERRO] controlLoginUser:', error);
+        return res.status(500).json({ error: 'Erro ao fazer login' });
     }
-
 }
 
-export { createUser, getAllUser, getUserByName, updatePassword, deleteUser, controlLoginUser }
+export const getUsers = async (req, res) => {
+    try {
+        const users = await User.findAll({ attributes: { exclude: ['password'] } });
+
+        if (!users) {
+            return res.status(404).json({ message: 'Não há usuários cadastrados.' })
+        }
+
+        return res.status(200).json(users);
+    }
+    catch (error) {
+        console.log('ERRO getRoadMaps:', error);
+        return res.status(500).json({ message: 'Erro interno no servidor' });
+    }
+};
+
+export const getUserById = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const user = await User.findByPk(id, { attributes: { exclude: ['password'] } });
+
+        if (!user) {
+            return res.status(404).json({ message: 'Usuário não encontrado' });
+        }
+
+        return res.status(200).json(user);
+
+    } catch (error) {
+        console.error('[ERRO] getUserById:', error);
+        return res.status(500).json({ message: 'Erro interno no servidor' });
+    }
+};
+
+export const updateUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updateData = req.body;
+
+        const user = await User.findByPk(id);
+
+        if (!user) {
+            return res.status(404).json({ message: `Usuário ${ERROR.NOT_FOUND}` });
+        };
+
+        if (updateData.password) {
+            updateData.password = await bcrypt.hash(updateData.password, 10);
+        }
+
+        await user.update(updateData);
+
+        const userResponse = user.toJSON();
+        delete userResponse.password;
+
+        return res.json({
+            message: 'Usuário atualizado com sucesso',
+            user: userResponse
+        });
+
+    } catch (error) {
+        console.error('[ERRO] updatePassword:', error);
+        return res.status(500).json({ message: 'Erro no serivdor:', error });
+    };
+};
+
+export const deleteUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const user = await User.findByPk(id);
+
+        if (!user) {
+            return res
+                .status(404)
+                .json({ message: `Usuário ${ERROR.NOT_FOUND}` })
+        };
+
+        await user.destroy();
+        return res.json({ message: `Usuário ${SUCCESS.DELETED}` });
+
+    } catch (error) {
+        console.error('[ERRO] deletedRoadMap', error)
+        return res.status(500).json({ message: 'Erro interno no serivdor:', error })
+    }
+};
