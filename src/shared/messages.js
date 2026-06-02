@@ -1,6 +1,6 @@
 export const ERROR = {
     ALREADY_EXIST: "já existene, preecnha novamente com outros dados!",
-    NOT_FOUND: "não encnontrado, tente novamente com outros dados!",
+    NOT_FOUND: "não encontrado, tente novamente com outros dados!",
     USER_NOT_FOUND: "não registrado, verifique e tente novamente."
 };
 
