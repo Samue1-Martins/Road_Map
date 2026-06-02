@@ -1,20 +1,17 @@
 import { Router } from "express";
 import {
     createVideo,
-    getAllVideos,
-    getVideoByTitle,
-    updateDurationVideo,
-    updateTitle,
-    updateTypeArchive,
+    getVideos,
+    updateVideo,
     deleteVideo
-} from "../controllers/video.controllers.js";
+} from "../controllers/video.controller.js";
+
+import { authenticateToken } from "../middleware/auth.middleware.js";
 
 export const videoRoutes = Router();
 
-videoRoutes.post("/new-video", createVideo);
-videoRoutes.get("/all-videos", getAllVideos);
-videoRoutes.get("/video-find-title", getVideoByTitle);
-videoRoutes.patch("/update-title/:id", updateTitle);
-videoRoutes.patch("/update-duration-video/:id", updateDurationVideo);
-videoRoutes.patch("/update-type-archive/:id", updateTypeArchive);
-videoRoutes.delete("/delete-video/:id", deleteVideo);
+videoRoutes.post("/videos", authenticateToken, createVideo);
+videoRoutes.get("/videos", authenticateToken, getVideos);
+videoRoutes.get("/videos/:id", authenticateToken, getVideos);
+videoRoutes.patch("/videos/:id", authenticateToken, updateVideo);
+videoRoutes.delete("/videos/:id", authenticateToken, deleteVideo);
