@@ -16,22 +16,19 @@ export const RoadMap = sequelize.define("tb_road_map", {
         type: DataTypes.TEXT,
         allowNull: false,
     },
-    local: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
     social_network: {
-        type: DataTypes.STRING,
+        type: DataTypes.ENUM('YouTube', 'Instagram', 'TikTok', 'Outros'),
         allowNull: false,
+        defaultValue: 'YouTube'
     },
-    createdAt: {
-        type: Sequelize.DATE,
+    status: {
+        type: DataTypes.ENUM('rascunho', 'ativo', 'arquivado'),
         allowNull: false,
-        defaultValue: Sequelize.fn('NOW'),
+        defaultValue: 'rascunho'
     },
-    updatedAt: {
-        type: Sequelize.DATE,
+    userId: {
+        type: DataTypes.INTEGER,
         allowNull: false,
-        defaultValue: Sequelize.fn('NOW'),
-    },
+        references: { model: 'tb_users', key: 'id' }
+    }
 });

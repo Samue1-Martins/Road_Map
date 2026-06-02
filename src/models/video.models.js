@@ -16,18 +16,23 @@ export const Video = sequelize.define("tb_video", {
         type: DataTypes.STRING,
         allowNull: false
     },
-    typeArchive: {
+    format: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
-    createdAt: {
-        type: Sequelize.DATE,
+    status: { 
+        type: DataTypes.ENUM('pendente', 'em_andamento', 'concluido', 'cancelado'), 
         allowNull: false,
-        defaultValue: Sequelize.fn('NOW'),
+        defaultValue: 'pendente'
     },
-    updatedAt: {
-        type: Sequelize.DATE,
+    video_url: {
+        type: DataTypes.STRING,
+        allowNull: true 
+    },
+    roadMapId: {
+        type: DataTypes.INTEGER,
         allowNull: false,
-        defaultValue: Sequelize.fn('NOW'),
-    },
+        references: { model: 'tb_road_map', key: 'id' },
+        onDelete: 'CASCADE' 
+    }
 });
